@@ -1,0 +1,169 @@
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}
+\usepackage[UTF8]{ctex}
+\usepackage{amsmath}
+\IEEEoverridecommandlockouts
+\overrideIEEEmargins
+
+
+\title{\LARGE \bf
+朴素贝叶斯练习题
+}
+
+
+\author{硕-8089 3118111009 许林松% <-this % stops a space
+}
+
+
+\begin{document}
+
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+
+\section{问答题}
+
+
+\subsection*{1}
+
+Abstractly, naive Bayes is a conditional probability model: given a problem instance to be classified, represented by a vector $\mathbf{x} = (x_1, \dots, x_n)$ representing some $n$ features (independent variables), it assigns to this instance probabilities
+:$$p(C_k \mid x_1, \dots, x_n)$$for each of $K$ possible outcomes or ''classes'' $C_k$
+
+The problem with the above formulation is that if the number of features $n$ is large or if a feature can take on a large number of values, then basing such a model on probability tables is infeasible.  We therefore reformulate the model to make it more tractable.  Using Bayes' theorem, the conditional probability can be decomposed as:$$p(C_k \mid \mathbf{x}) = \frac{p(C_k) \ p(\mathbf{x} \mid C_k)}{p(\mathbf{x})}$$
+
+In plain English, using Bayesian probability terminology, the above equation can be written as:$$\mbox{posterior} = \frac{\mbox{prior} \times \mbox{likelihood}}{\mbox{evidence}}$$
+
+In practice, there is interest only in the numerator of that fraction, because the denominator does not depend on $C$ and the values of the features $x_i$ are given, so that the denominator is effectively constant.
+
+The numerator is equivalent to the joint probability model:$$p(C_k, x_1, \dots, x_n)$$
+Now the "naive" conditional independence assumptions come into play: assume that each feature $x_i$ is conditionally statistical independence|independent of every other feature $x_j$ for $j\neq i$, given the category $C_k$.  This means that:$$p(x_i \mid x_{i+1}, \dots ,x_{n}, C_k ) = p(x_i \mid C_k)$$
+
+Thus, the joint model can be expressed as:
+
+\begin{align*}
+    p(C_k \mid x_1, \dots, x_n) & \propto p(C_k, x_1, \dots, x_n) = \\
+                            & = p(C_k) \ p(x_1 \mid C_k) \ p(x_2\mid C_k) \ p(x_3\mid C_k) \ \cdots \\
+                            & = p(C_k) \prod_{i=1}^n p(x_i \mid C_k)\,.
+\end{align*}
+
+Where $\propto$ denotes Proportionality.
+
+This means that under the above independence assumptions, the conditional distribution over the class variable $C$ is:$$p(C_k \mid x_1, \dots, x_n) = \frac{1}{Z} p(C_k) \prod_{i=1}^n p(x_i \mid C_k)$$
+
+where the evidence $$Z = p(\mathbf{x}) = \sum_k p(C_k) \ p(\mathbf{x} \mid C_k)$$ is a scaling factor dependent only on $$x_1, \dots, x_n$$, that is, a constant if the values of the feature variables are known.
+
+\textbf{Constructing a classifier from the probability model}
+
+The discussion so far has derived the independent feature model, that is, the naive Bayes probability model.  The naive Bayes classifier combines this model with a decision rule.  One common rule is to pick the hypothesis that is most probable; this is known as the ''maximum a posteriori'' or ''MAP'' decision rule.  The corresponding classifier, a Bayes classifier, is the function that assigns a class label $\hat{y} = C_k$ for some $k$ as follows:$$\hat{y} = \underset{k \in \{1, \dots, K\}}{\operatorname{argmax}} \ p(C_k) \displaystyle\prod_{i=1}^n p(x_i \mid C_k)$$
+
+\subsection*{2}
+
+In simple terms, a naive Bayes classifier assumes that the presence (or absence) of a particular feature of a class is unrelated to the presence (or absence) of any other feature, given the class variable. Even if these features depend on each other or upon the existence of the other features, a naive Bayes classifier considers all of these properties to independently contribute to the probability.
+
+\subsection*{3}
+
+\textbf{Supervised Machine Learning}
+
+The majority of practical machine learning uses supervised learning.
+
+Supervised learning is where you have input variables $x$ and an output variable $y$ and you use an algorithm to learn the mapping function from the input to the output.
+$$y = f(x)$$
+The goal is to approximate the mapping function so well that when you have new input data $x$ that you can predict the output variables $y$ for that data.
+
+It is called supervised learning because the process of an algorithm learning from the training dataset can be thought of as a teacher supervising the learning process. We know the correct answers, the algorithm iteratively makes predictions on the training data and is corrected by the teacher. Learning stops when the algorithm achieves an acceptable level of performance.
+
+Supervised learning problems can be further grouped into regression and classification problems.
+
+\textbf{Unsupervised Machine Learning}
+
+Unsupervised learning is where you only have input data (X) and no corresponding output variables.
+
+The goal for unsupervised learning is to model the underlying structure or distribution in the data in order to learn more about the data.
+
+These are called unsupervised learning because unlike supervised learning above there is no correct answers and there is no teacher. Algorithms are left to their own devises to discover and present the interesting structure in the data.
+
+Unsupervised learning problems can be further grouped into clustering and association problems.
+
+\subsection*{4}
+
+\textbf{What?}
+
+In machine learning, overfitting occurs when a learning model customizes itself too much to describe the relationship between training data and the labels. Overfitting tends to make the model very complex by having too many parameters. By doing this, it loses its generalization power, which leads to poor performance on new data.
+
+\textbf{Why?}
+
+The reason this happens is because we use different criteria to train the model and then test its efficiency. As we know, a model is trained by maximizing its accuracy on the training dataset. But its performance is determined on its ability to perform well on unknown data. In this situation, overfitting occurs when our model tries to memorize the training data as opposed to try to generalize from patterns observed in the training data.
+
+For example, let’s say if the number of parameters in our model is greater than the number of datapoints in our training dataset. In this case, a learning model can predict the output for training data by simply memorizing the entire training dataset. But as you can imagine, such model will fail drastically when dealing with unknown data.
+
+\textbf{How?}
+
+One way to avoid overfitting is to use a lot of data. The main reason overfitting happens is because you have a small dataset and you try to learn from it. The algorithm will have greater control over this small dataset and it will make sure it satisfies all the datapoints exactly. But if you have a large number of datapoints, then the algorithm is forced to generalize and come up with a good model that suits most of the points.
+
+We don’t have the luxury of gathering a large database all the time. Sometimes we are limited to a small database and we are forced to come up with a model based on that. In these situations, we use a technique called cross validation. What it does it that it splits the dataset into training and testing datasets. Only the datapoints in the training dataset are used to come up with the model and the testing dataset is used to test how good the model is. This is repeated with different partitions of training and testing datasets. This method gives a fairly good estimate of the underlying model because we are testing it on different partitions to generalize it as much as possible.
+
+\subsection*{5}
+
+In short, Artificial Intelligence is the broader concept of machines being able to carry out tasks in a way that we would consider “smart”. And, Machine Learning is a current application of AI based around the idea that we should really just be able to give machines access to data and let them learn for themselves.
+
+
+\subsection*{6}
+
+\begin{align*}
+    P(A \mid bad) & = \frac{P(A,bad)}{P(bad)} \\
+                  & = \frac{P(bad \mid A)P(A)}{P(bad \mid A)P(A)+P(bad \mid B)P(B)}\\
+                  & = \frac{0.3 \times 0.03}{0.3 \times 0.03 + 0.7 \times 0.01} \\
+                  & = \frac{9}{16}
+\end{align*}
+
+
+\subsection*{7}
+
+\begin{align*}
+    & P(yes \mid 985,master,C++) \\
+    & = \frac{P(985,master,C++ \mid offer)P(yes)}{P(985,master,C++)} \\
+    & \propto P(yes)P(985 \mid offer)P(master \mid yes)P(C++ \mid yes) \\
+    & = \frac{6}{10} \times \frac{4}{6} \times \frac{4}{6} \times \frac{1}{6} \\
+    & = \frac{2}{45}
+\end{align*}
+
+\begin{align*}
+    & P(no \mid 985,master,C++) \\
+    & = \frac{P(985,master,C++ \mid no)P(refuse)}{P(985,master,C++)} \\
+    & \propto P(no)P(985 \mid offer)P(master \mid no)P(C++ \mid no) \\
+    & = \frac{4}{10} \times \frac{1}{4} \times \frac{2}{4} \times \frac{3}{4} \\
+    & = \frac{3}{80}
+\end{align*}
+
+
+\section{选择}
+
+\begin{itemize}
+
+\item D
+\item C
+\item A
+\item A,B
+\item A
+\item cannot understand 
+\item B
+\item A
+\item A,B,C
+\item C
+\item D
+
+\end{itemize}
+
+
+
+\section{编程}
+
+
+
+
+
+
+\end{document}
