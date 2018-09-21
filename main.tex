@@ -1,12 +1,16 @@
 \documentclass[letterpaper, 10 pt, conference]{ieeeconf}
 \usepackage[UTF8]{ctex}
 \usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage[colorlinks,linkcolor=blue]{hyperref}
 \IEEEoverridecommandlockouts
 \overrideIEEEmargins
 
 
 \title{\LARGE \bf
-朴素贝叶斯练习题
+Naive Bayes Homework
 }
 
 
@@ -24,7 +28,7 @@
 
 
 
-\section{问答题}
+\section{Q&A}
 
 
 \subsection*{1}
@@ -42,9 +46,8 @@ The numerator is equivalent to the joint probability model:$$p(C_k, x_1, \dots, 
 Now the "naive" conditional independence assumptions come into play: assume that each feature $x_i$ is conditionally statistical independence|independent of every other feature $x_j$ for $j\neq i$, given the category $C_k$.  This means that:$$p(x_i \mid x_{i+1}, \dots ,x_{n}, C_k ) = p(x_i \mid C_k)$$
 
 Thus, the joint model can be expressed as:
-
 \begin{align*}
-    p(C_k \mid x_1, \dots, x_n) & \propto p(C_k, x_1, \dots, x_n) = \\
+    p(C_k \mid x_1, \dots, x_n) & \propto p(C_k, x_1, \dots, x_n) \\
                             & = p(C_k) \ p(x_1 \mid C_k) \ p(x_2\mid C_k) \ p(x_3\mid C_k) \ \cdots \\
                             & = p(C_k) \prod_{i=1}^n p(x_i \mid C_k)\,.
 \end{align*}
@@ -124,10 +127,10 @@ In short, Artificial Intelligence is the broader concept of machines being able 
 
 \begin{align*}
     & P(yes \mid 985,master,C++) \\
-    & = \frac{P(985,master,C++ \mid offer)P(yes)}{P(985,master,C++)} \\
-    & \propto P(yes)P(985 \mid offer)P(master \mid yes)P(C++ \mid yes) \\
-    & = \frac{6}{10} \times \frac{4}{6} \times \frac{4}{6} \times \frac{1}{6} \\
-    & = \frac{2}{45}
+    & = \frac{P(985,master,C++ \mid yes)P(yes)}{P(985,master,C++)} \\
+    & \propto P(yes)P(985 \mid yes)P(master \mid yes)P(C++ \mid yes) \\
+    & = \frac{6}{10} \times \frac{4}{6} \times \frac{2}{6} \times \frac{1}{6} \\
+    & = \frac{1}{45}
 \end{align*}
 
 \begin{align*}
@@ -138,8 +141,9 @@ In short, Artificial Intelligence is the broader concept of machines being able 
     & = \frac{3}{80}
 \end{align*}
 
+Because $\frac{1}{45} < \frac{3}{80}$, so he can't get the offer.
 
-\section{选择}
+\section{Multiple choice question}
 
 \begin{itemize}
 
@@ -148,7 +152,7 @@ In short, Artificial Intelligence is the broader concept of machines being able 
 \item A
 \item A,B
 \item A
-\item cannot understand 
+\item A,B
 \item B
 \item A
 \item A,B,C
@@ -159,11 +163,219 @@ In short, Artificial Intelligence is the broader concept of machines being able 
 
 
 
-\section{编程}
+\section{Programming}
+
+\lstset{
+ columns=fixed,       
+ frame=none,                                          % 不显示背景边框
+ keywordstyle=\color[RGB]{40,40,255},                 % 设定关键字颜色
+ numberstyle=\footnotesize\color{darkgray},           
+ commentstyle=\it\color[RGB]{0,96,96},                % 设置代码注释的格式
+ stringstyle=\rmfamily\slshape\color[RGB]{128,0,0},   % 设置字符串格式
+ showstringspaces=false,                              % 不显示字符串中的空格
+ language=python,                                        % 设置语言
+}
 
 
 
+\begin{lstlisting}
+import numpy as np
+import pandas as pd
+import random
+from sklearn import model_selection, naive_bayes
+X = []
+data = pd.read_csv('career_data.csv')
+for i in range(data.shape[0]):
+    tmp = []
+    if data.iloc[i]['985'] == 'Yes':
+        tmp.append(1)
+    else:
+        tmp.append(-1)
+    if data.iloc[i]['education'] == 'bachlor':
+        tmp.append(1)
+    elif data.iloc[i]['education'] == 'master':
+        tmp.append(0)
+    else:
+        tmp.append(-1)
+    if data.iloc[i]['skill'] == 'C++':
+        tmp.append(1)
+    else:
+        tmp.append(-1)
+    X.append(tmp)
+    if data.iloc[i]['enrolled'] == 'No':
+        tmp.append(0)
+    else:
+        tmp.append(1)
+X = np.array(X)
+for i in range(10):
+    a = model_selection.train_test_split(X[:,:3], X[:,3],test_size=0.2, random_state=None,stratify=X[:,3])
+    X_train, X_test, y_train, y_test = a
+    cls = naive_bayes.GaussianNB()
+    cls.fit(X_train, y_train)
+    print('GaussianNB Testing-%d Score: %.2f'  % (i,cls.score(X_test, y_test)))
+\end{lstlisting}
+
+\textbf{The result is:}
+\begin{align*}
+GaussianNB \quad Testing-0 \quad Score: 0.50 \\
+GaussianNB \quad Testing-1 \quad Score: 1.00 \\
+GaussianNB \quad Testing-2 \quad Score: 0.50 \\
+GaussianNB \quad Testing-3 \quad Score: 1.00 \\
+GaussianNB \quad Testing-4 \quad Score: 0.50 \\
+GaussianNB \quad Testing-5 \quad Score: 0.00 \\
+GaussianNB \quad Testing-6 \quad Score: 1.00 \\
+GaussianNB \quad Testing-7 \quad Score: 0.50 \\
+GaussianNB \quad Testing-8 \quad Score: 0.00 \\
+GaussianNB \quad Testing-9 \quad Score: 1.00
+\end{align*}
 
 
+
+\section{Apriori}
+
+This section I wrote mainly refers to 《Machine Learning in Action》.
+
+\textbg{Association analysis} is the task of finding interesting relationships in large datasets. These interesting relationships can take two forms: frequent item sets or association rules. \emph{Frequent item sets} are a collection of items that frequently occur together. The second way to view interesting relationships is association rules. \emph{Association rules} suggest that a strong relationship exists between two items. 
+
+\textbf{Apriori}
+A priori means “from before” in Latin. When defining a problem, it’s common to state prior knowledge, or assumptions. This is written as “a priori.” In Bayesian statistics, it’s common to make inferences conditional upon this a priori knowledge. A priori knowledge can come from domain knowledge, previous measurements, and so on.
+
+\textbf{Finding frequent itemsets with the Apriori algorithm}
+
+\begin{lstlisting}
+import numpy as np
+def loadDataSet():
+    return [[1,3,4],[2,3,5],[1,2,3,5],[2,5]]
+def createC1(dataSet):
+    C1 = []
+    for transaction in dataSet:
+        for item in transaction:
+            if not [item] in C1:
+                C1.append([item])
+    C1.sort()
+    return list(map(frozenset, C1))
+def scanD(D, Ck, minSupport):
+    ssCnt = {}
+    for tid in D:
+        for can in Ck:
+            if can.issubset(tid):
+                if can not in ssCnt: ssCnt[can]=1
+                else: ssCnt[can] += 1
+    numItems = float(len(D))
+    retList = []
+    supportData = {}
+    for key in ssCnt:
+        support = ssCnt[key]/numItems
+        if support >= minSupport:
+            retList.insert(0,key)
+        supportData[key] = support
+    return retList, supportData
+def aprioriGen(Lk, k): #creates Ck
+    retList = []
+    lenLk = len(Lk)
+    for i in range(lenLk):
+        for j in range(i+1, lenLk):
+            L1 = list(Lk[i])[:k-2]
+            L2 = list(Lk[j])[:k-2]
+            L1.sort(); L2.sort()
+            if L1==L2:
+                retList.append(Lk[i] | Lk[j])
+    return retList
+def apriori(dataSet, minSupport = 0.5):
+    C1 = createC1(dataSet)
+    D = list(map(set, dataSet))
+    L1, supportData = scanD(D, C1, minSupport)
+    L = [L1]
+    k=2
+    while (len(L[k-2]) > 0):
+        Ck = aprioriGen(L[k-2], k)
+        print(k)
+        print(Ck)
+        Lk, supK = scanD(D, Ck, minSupport)
+        supportData.update(supK)
+        L.append(Lk)
+        k += 1
+    return L, supportData
+dataSet = loadDataSet()
+apriori(dataSet)
+\end{lstlisting}
+
+\textbf{The result is:}
+\begin{align*}
+& ([[frozenset({1}), frozenset({3}), frozenset({2}), frozenset({5})], \\
+&  [frozenset({3, 5}), frozenset({1, 3}), frozenset({2, 5}), \\ 
+& frozenset({2, 3})], \\
+&  [frozenset({2, 3, 5})], \\
+&  []], \\
+& {frozenset({5}): 0.75, \\
+&  frozenset({3}): 0.75, \\
+&  frozenset({2, 3, 5}): 0.5, \\
+&  frozenset({1, 2}): 0.25, \\
+&  frozenset({1, 5}): 0.25, \\
+&  frozenset({3, 5}): 0.5, \\
+&  frozenset({4}): 0.25, \\
+&  frozenset({2, 3}): 0.5, \\
+&  frozenset({2, 5}): 0.75, \\
+&  frozenset({1}): 0.5, \\
+&  frozenset({1, 3}): 0.5, \\
+&  frozenset({2}): 0.75}) 
+\end{align*}
+
+\textbf{Mining association rules from frequent item sets}
+
+\begin{lstlisting}
+def Rules(L, supp, Conf=0.7):
+    big = []
+    for i in range(1, len(L)):
+        for fr in L[i]:
+            H1=[frozenset([t]) for t in fr]
+            if(i > 1):
+                rFC(fr,H1,supp,big,Conf)
+            else:
+                calc(fr,H1,supp,big,Conf)
+    return big
+def calc(fr,H,supp,brl,Conf=0.7):
+    prunedH = []
+    for c1 in H:
+        co=supp[fr]/supp[fr-c1]
+        if co >= Conf:
+            print (fr-c1,'->',c1,'conf:',co)
+            brl.append((fr-c1,c1,co))
+            prunedH.append(c1)
+    return prunedH
+def rFC(fr,H,supp,brl,Conf=0.7):
+    m = len(H[0])
+    if (len(fr) > (m + 1)):
+        Hmp1 = aprioriGen(H, m + 1)
+        Hmp1 = calc(fr,Hmp1,supp,brl,Conf)
+        if (len(Hmp1) > 1):
+            rFC(fr,Hmp1,supp,brl,Conf)
+
+\end{lstlisting}
+
+\textbf{The result when the $Conf = 0.5$ is:}
+\begin{align*}
+& frozenset({5}) \quad -> \quad frozenset({3}) \quad conf:\quad 0.66 \\
+& frozenset({3}) \quad -> \quad frozenset({5}) \quad conf:\quad  0.66 \\
+& frozenset({3}) \quad -> \quad frozenset({1}) \quad conf: \quad 0.66 \\
+& frozenset({1}) \quad -> \quad frozenset({3}) \quad conf: \quad 1.0 \\
+& frozenset({5}) \quad -> \quad frozenset({2}) \quad conf: \quad 1.0 \\
+& frozenset({2}) \quad -> \quad frozenset({5}) \quad conf: \quad 1.0 \\
+& frozenset({3}) \quad -> \quad frozenset({2}) \quad conf:\quad  0.66 \\
+& frozenset({2}) \quad -> \quad frozenset({3}) \quad conf:\quad  0.66 \\
+& frozenset({5}) \quad -> \quad frozenset({2, 3}) \quad conf:\quad  0.66\\
+& frozenset({3}) \quad -> \quad frozenset({2, 5}) \quad conf:\quad  0.66 \\
+& frozenset({2}) \quad -> \quad frozenset({3, 5}) \quad conf:\quad  0.66 \\
+\end{align*}
+
+\section{FP-growth}
+
+FP-growth builds from Apriori but uses some different techniques to accomplish the same task. That task is finding frequent itemsets or pairs, sets of things that commonly occur together, by storing the dataset in a special structure called an FP-tree. This results in faster execution times than Apriori, com- monly with performance two orders of magnitude better.
+
+Two of the most common ways of looking at things in the dataset are frequent itemsets and association rules. FP-growth allows us to mine data more efficiently. This algorithm does a better job of finding frequent itemsets, but it doesn’t find association rules.
+
+The FP-growth algorithm is faster than Apriori because it requires only two scans of the database, whereas Apriori will scan the dataset to find if a given pattern is frequent or not—Apriori scans the dataset for every potential frequent item. On small datasets, this isn’t a problem, but when you’re dealing with larger datasets, this will be a prob- lem. The FP-growth algorithm scans the dataset only twice. 
+
+Because the the problem of typographic format, I don't write the code on this homework. If you are interested in it, you can find the code I think good from \href{https://www.ibm.com/developerworks/cn/analytics/library/machine-learning-hands-on2-fp-growth/index.html}{here}
 
 \end{document}
